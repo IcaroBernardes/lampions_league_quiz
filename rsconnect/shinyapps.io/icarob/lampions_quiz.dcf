@@ -1,0 +1,13 @@
+name: lampions_quiz
+title: lampions_quiz
+username:
+account: icarob
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 5375362
+bundleId: 5417150
+url: https://icarob.shinyapps.io/lampions_quiz/
+when: 1640787640.52687
+lastSyncTime: 1640787640.52687
+asMultiple: FALSE
+asStatic: FALSE

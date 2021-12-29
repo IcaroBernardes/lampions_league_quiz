@@ -1,0 +1,114 @@
+body {
+	text-align: center;
+	color: white;
+	font-family: 'Merriweather', serif;
+}
+
+.container {
+	background: #003398;
+}
+
+.title {
+	font-size: 50px;
+	line-height: 53px;
+	font-weight: 600;
+	font-family: 'Montserrat', sans-serif;
+	margin-top: 20px;
+	margin-bottom: 10px;
+}
+
+.subtitle {
+	font-size: 20px;
+	line-height: 22px;
+	font-weight: 400;
+	font-family: 'Montserrat', sans-serif;
+	margin-bottom: 20px;
+}
+
+.instructions {
+	margin-bottom: 10px;
+}
+
+a:link, a:hover, a:visited, a:active {
+	color: white;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+.social {
+	margin-bottom: 20px;
+}
+
+.social > * {
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.fonte {
+	font-size: 10px;
+	margin-top: 10px;
+}
+
+.barra {
+	font-family: 'Montserrat', sans-serif;
+	background: #377AFF;
+	padding: 10px;
+	margin-top: 20px;
+    margin-bottom: 20px;
+    position: sticky;
+    top: -1px;
+    z-index: 1;
+}
+
+.barra > * {
+	margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.form-group {
+	margin-bottom: 0;
+}
+
+#chute {
+	height: 54px;
+	font-size: 20px;
+}
+
+.cima {
+	font-weight: bold;
+	font-size: 15px;
+}
+
+.baixo {
+	font-weight: bold;
+	font-size: 30px;
+	line-height: 33px;
+}
+
+table {
+	margin-bottom: 30px;
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+.lacuna {
+	border: white 1px solid;
+	height: 30px;
+	width: 100vw;
+	font-weight: bold;
+}
+
+.answer {
+	background: #0057ff;
+}
+
+.wrong {
+	background: #ff0000;
+}
+
+.header {
+	font-family: 'Montserrat', sans-serif;
+	font-size: 20px;
+	text-align: center;
+	padding-bottom: 12px;
+}
