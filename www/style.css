@@ -8,7 +8,7 @@ body {
 	background: #003398;
 }
 
-.title {
+#title {
 	font-size: 50px;
 	line-height: 53px;
 	font-weight: 600;
@@ -17,7 +17,7 @@ body {
 	margin-bottom: 10px;
 }
 
-.subtitle {
+#subtitle {
 	font-size: 20px;
 	line-height: 22px;
 	font-weight: 400;
@@ -25,7 +25,7 @@ body {
 	margin-bottom: 20px;
 }
 
-.instructions {
+#instructions {
 	margin-bottom: 10px;
 }
 
@@ -42,6 +42,10 @@ a:link, a:hover, a:visited, a:active {
 .social > * {
 	margin-left: 5px;
 	margin-right: 5px;
+}
+
+#message {
+	font-size: 24px;
 }
 
 .fonte {

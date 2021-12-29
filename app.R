@@ -6,6 +6,7 @@ library(tidyverse)
 library(rlang)
 library(stringi)
 library(lubridate)
+library(glue)
 
 # 1. Definição inicial dos dados
 ## Define os nomes dos estados com acentuação
@@ -176,7 +177,7 @@ ui <- fixedPage(
   fixedRow(
     column(
       width = 12,
-      class = "title",
+      id = "title",
       "Lampions League Quiz"
     )
   ),
@@ -185,7 +186,7 @@ ui <- fixedPage(
   fixedRow(
     column(
       width = 12,
-      class = "subtitle",
+      id = "subtitle",
       "Teste seus conhecimentos sobre as principais ligas do Nordeste!"
     )
   ),
@@ -194,8 +195,8 @@ ui <- fixedPage(
   fixedRow(
     column(
       width = 12,
-      class = "instructions",
-      span("Digite na caixa abaixo os seus chutes. Se o seu chute for correto, a caixa ficará limpa para receber novas respostas. Você tem 15 minutos para dar seus palpites!"),
+      id = "instructions",
+      span("Digite na caixa abaixo os seus chutes. Se o seu chute for correto, a caixa ficará limpa para receber novas respostas. Você tem 18 minutos para dar seus palpites!"),
       br(),
       span("Esse Quiz é inspirado em um similar "),
       a("Desafio do GE", target = "_blank", href = "https://interativos.globoesporte.globo.com/futebol/futebol-internacional/chuta-ai/chuta-ai-acerte-todos-os-98-participantes-das-top-5-ligas-da-europa"),
@@ -205,10 +206,11 @@ ui <- fixedPage(
     )
   ),
   
-  ## Insere o botão de compartilhamento
+  ## Insere os botões de compartilhamento
   fixedRow(
     column(
       width = 12,
+      id = "social-start",
       class = "social",
       span("Desafie outros: "),
       a(
@@ -221,6 +223,14 @@ ui <- fixedPage(
         href = "https://api.whatsapp.com/send/?phone&text=Quantos+times+do+Nordeste+você+consegue+adivinhar%3F+Entre+aqui+e+se+desafie%3A+https%3A%2F%2Ficarob.shinyapps.io%2Flampions_quiz&app_absent=0",
         onclick = "javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');return false;"
       )
+    )
+  ),
+  
+  ## Insere a mensagem final de compartilhamento
+  fixedRow(
+    column(
+      width = 12,
+      shinyjs::hidden(uiOutput("share"))
     )
   ),
   
@@ -282,7 +292,7 @@ ui <- fixedPage(
 server <- function(input, output, session) {
   
   ## Define algumas variáveis
-  inittime <- reactiveVal(15*60) ### Define o tempo total para responder o quiz (segundos)
+  inittime <- reactiveVal(18*60) ### Define o tempo total para responder o quiz (segundos)
   started <- reactiveVal(0) ### Indica se o usuario começou a responder o quiz
   ended <- reactiveVal(0) ### Indica se o usuário terminou de responder o quiz
   rights <- reactiveVal(0) ### Indica a qtd. de acertos
@@ -414,9 +424,12 @@ server <- function(input, output, session) {
   })
   
   ## Ativa o cronômetro assim que o usuário digita
-  ## o primeiro caractere (ativa a "flag" started)
+  ## o primeiro caractere (ativa a "flag" started) e
+  ## confirma que o quiz
   observeEvent(req(shoot()), {
-    started(1)
+    if (ended() == 0){
+      started(1)
+    }
   })
   
   ## Diminui um segundo do tempo a partir do
@@ -450,11 +463,16 @@ server <- function(input, output, session) {
   })
   
   ## Verifica se o quiz acabou ("flag" ended ativa), esconde o
-  ## campo de inserção dos chutes e exibe todos os nomes dos clubes
+  ## campo de inserção dos chutes, elementos do topo da página e
+  ## exibe todos os nomes dos clubes e uma mensagem final
   observe({
     if (ended() == 1) {
       
       shinyjs::hide(id = "chute")
+      shinyjs::hide(id = "subtitle")
+      shinyjs::hide(id = "instructions")
+      shinyjs::hide(id = "social-start")
+      shinyjs::show(id = "share")
       
       ligas %>% 
         apply(1, list) %>% 
@@ -485,6 +503,34 @@ server <- function(input, output, session) {
         })
       
     }
+  })
+  
+  ## Cria a mensagem final de compartilhamento
+  output$share <- renderUI({
+    
+    
+    corretos <- rights()
+    tempo <- 18*60 - inittime()
+    text_show <- glue::glue("Você acertou {corretos} clubes em {tempo} segundos!")
+    text_twitter <- glue::glue("https://twitter.com/intent/tweet?url=https%3A%2F%2Ficarob.shinyapps.io%2Flampions_quiz&text=Eu+joguei+esse+Quiz+e+acertei+{corretos}+times+em+{tempo}+segundos. E+você%3F+Quantos+times+do+Nordeste+você+consegue+adivinhar%3F ")
+    text_whatsapp <- glue::glue("https://api.whatsapp.com/send/?phone&text=Eu+joguei+esse+Quiz+e+acertei+{corretos}+times+em+{tempo}+segundos. E+você%3F+Quantos+times+do+Nordeste+você+consegue+adivinhar%3F+Entre+aqui+e+se+desafie%3A+https%3A%2F%2Ficarob.shinyapps.io%2Flampions_quiz&app_absent=0")
+    
+    div(
+      class = "social",
+      span(text_show, id = "message"), br(),
+      span("Mostre seu desempenho a outros: "),
+      a(
+        img(src = "twitter.png", height = "17.2px"),
+        href = text_twitter,
+        onclick = "javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');return false;"
+      ),
+      a(
+        img(src = "whatsapp.png", height = "17.2px"),
+        href = text_whatsapp,
+        onclick = "javascript:window.open(this.href, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=300,width=600');return false;"
+      )
+    )
+    
   })
   
 }
