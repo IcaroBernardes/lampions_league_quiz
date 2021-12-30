@@ -91,15 +91,26 @@ a:link, a:hover, a:visited, a:active {
 
 table {
 	margin-bottom: 30px;
-	margin-left: 10px;
-	margin-right: 10px;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+.escudo {
+	max-height: 20px;
+	max-width: 3vw;
+	margin-right: 1vw;
+}
+
+.espaco {
+	width: 4vw;
+	height: 30px;
 }
 
 .lacuna {
+	width: 96vw;
+	font-weight: bold;
 	border: white 1px solid;
 	height: 30px;
-	width: 100vw;
-	font-weight: bold;
 }
 
 .answer {

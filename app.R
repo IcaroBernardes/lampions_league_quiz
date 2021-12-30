@@ -196,7 +196,7 @@ ui <- fixedPage(
     column(
       width = 12,
       id = "instructions",
-      span("Digite na caixa abaixo os seus chutes. Se o seu chute for correto, a caixa ficará limpa para receber novas respostas. Você tem 18 minutos para dar seus palpites!"),
+      span("Você conhece os clubes da 1a divisão dos campeonatos nordestinos? Digite na caixa abaixo os seus chutes. Se o seu chute for correto, a caixa ficará limpa para receber novas respostas. Você tem 18 minutos para dar seus palpites!"),
       br(),
       span("Esse Quiz é inspirado em um similar "),
       a("Desafio do GE", target = "_blank", href = "https://interativos.globoesporte.globo.com/futebol/futebol-internacional/chuta-ai/chuta-ai-acerte-todos-os-98-participantes-das-top-5-ligas-da-europa"),
@@ -246,7 +246,9 @@ ui <- fixedPage(
     column(
       width = 12,
       class = "fonte",
-      "Imagem: Felipe Santos / Ceará SC / Lance!"
+      span("Imagem: Felipe Santos / Ceará SC / Lance!"),
+      br(),
+      span("Imagens dos escudos dos clubes pertencem aos mesmos")
     )
   ),
   
@@ -259,7 +261,7 @@ ui <- fixedPage(
         inputId = "chute",
         label = NULL,
         width = "100%",
-        placeholder = "digite seu chute aqui"
+        placeholder = "digite os nomes dos clubes aqui"
       ),
     ),
     
@@ -323,25 +325,47 @@ server <- function(input, output, session) {
           apply(1, list)
         
         ### Cria linhas de uma dada tabela (tr). Essas linhas têm 
-        ### apenas uma célula (td). Cada célula contém o nome de
-        ### um clube em um span inicialmente invisível
+        ### apenas duas células (td). Cada célula contém o nome de
+        ### um clube e seu escudo (inicialmente invisíveis), bem
+        ### como o contorno dos escudos
         map2(x, seq_along(x),
-             ~if (!is.na(.x)) {
-               tags$tr(
-                 tags$td(
-                   class = "lacuna",
-                   id = paste0("LAC",stringi::stri_trans_general(str = liga, id = "Latin-ASCII"),.y),
-                   hidden(span(id = paste0(stringi::stri_trans_general(str = liga, id = "Latin-ASCII"),.y), .x[[1]]))
+             function(x,y) {
+               club = x[[1]] %>% 
+                 tolower() %>% 
+                 stringi::stri_trans_general(id = "Latin-ASCII") %>% 
+                 stringr::str_remove_all("[[:space:]]")
+               league = stringi::stri_trans_general(str = liga, id = "Latin-ASCII")
+               if (!is.na(x)) {
+                 tags$tr(
+                   tags$td(
+                     class = "espaco",
+                     img(src = paste0("teams/",club,"_outline.png"),
+                         id = paste0("OUT",league,y),
+                         class = "escudo"),
+                     shinyjs::hidden(img(src = paste0("teams/",club,".png"),
+                                         id = paste0("ESC",league,y),
+                                         class = "escudo"))
+                   ),
+                   tags$td(
+                     class = "lacuna",
+                     id = paste0("LAC",league,y),
+                     hidden(span(id = paste0(league,y), x[[1]]))
+                   )
                  )
-               )
+               }
              }
+             
+             
         ) %>%
           #### Toma o conjunto de linhas e põe dentro de uma tabela (table)
           tags$table() %>%
           #### Insere uma linha acima de todas as outras dentro da tabela.
           #### Essa linha contém o título da coluna (th)
           tagInsertChildren(
-            tags$tr(tags$th(class = "header", as.character(liga))),
+            tags$tr(
+              tags$th(),
+              tags$th(class = "header", as.character(liga))
+              ),
             after = 0
           )
         
@@ -377,7 +401,10 @@ server <- function(input, output, session) {
                ### Verifica se o chute corresponde a alguma das opções de resposta
                if (str_detect(shoot, opcoes)) {
                  #### Exibe o nome do clube adivinhado
-                 shinyjs::show(id = id, anim = TRUE, time = 0.25)
+                 shinyjs::show(id = id, anim = TRUE, time = 0.3)
+                 #### Esconde o contorno do escudo e exibe o escudo do clube adivinhado
+                 shinyjs::hide(id = paste0("OUT",id))
+                 shinyjs::show(id = paste0("ESC",id), anim = TRUE, time = 0.3, animType = "fade")
                  #### Muda a aparência da linha do clube adivinhado
                  shinyjs::addClass(id = paste0("LAC",id), class = "answer")
                  #### Toma o nome da liga e converte em symbol
@@ -464,7 +491,7 @@ server <- function(input, output, session) {
   
   ## Verifica se o quiz acabou ("flag" ended ativa), esconde o
   ## campo de inserção dos chutes, elementos do topo da página e
-  ## exibe todos os nomes dos clubes e uma mensagem final
+  ## exibe todos os nomes e escudos dos clubes e uma mensagem final
   observe({
     if (ended() == 1) {
       
@@ -494,7 +521,10 @@ server <- function(input, output, session) {
                  ### Verifica se um dado clube ainda não foi adivinhado
                  if (!is.na(opcoes)) {
                    #### Exibe o nome do clube não-adivinhado
-                   shinyjs::show(id = id, anim = TRUE, time = 0.25)
+                   shinyjs::show(id = id, anim = TRUE, time = 0.3)
+                   #### Esconde o contorno do escudo e exibe o escudo do clube não-adivinhado
+                   shinyjs::hide(id = paste0("OUT",id))
+                   shinyjs::show(id = paste0("ESC",id), anim = TRUE, time = 0.3, animType = "fade")
                    #### Muda a aparência da linha do clube não-adivinhado
                    shinyjs::addClass(id = paste0("LAC",id), class = "wrong")
                  }
